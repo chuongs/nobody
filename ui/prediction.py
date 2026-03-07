@@ -88,7 +88,6 @@ def show_viewer(image, boxes_meta, labels, confidences):
     )
 
     fig.min_border = 0
-
     fig.image_rgba(image=[rgba], x=0, y=0, dw=w, dh=h)
 
     data = {
@@ -116,15 +115,6 @@ def show_viewer(image, boxes_meta, labels, confidences):
         data["size"].append(f"{bw} × {bh} px")
 
     source = ColumnDataSource(data)
-
-    fig.circle(
-        x="x",
-        y="y",
-        radius=5,
-        fill_color="white",
-        line_color=None,
-        source=source,
-    )
 
     renderer = fig.circle(
         x="x",
@@ -159,6 +149,9 @@ def render_predict(username: str) -> None:
 
     st.title("Prediction")
 
+    if "last_state" not in st.session_state:
+        st.session_state.last_state = None
+
     with st.container(border=True):
 
         uploaded_file = st.file_uploader(
@@ -175,12 +168,17 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
+    current_state = (uploaded_file.file_id, remove_bg_mode)
 
-    
+    if current_state == st.session_state.last_state:
+        return
+
+    st.session_state.last_state = current_state
+
     with st.container(border=True):
-    
+
         image = Image.open(uploaded_file).convert("RGB")
-    
+
         if remove_bg_mode:
 
             image_no_background = remove(image)
@@ -241,34 +239,10 @@ def render_predict(username: str) -> None:
         uid = uuid.uuid4().hex
 
         st.markdown(f"""
-        <style>
-        div[data-testid="stMainBlockContainer"]{{
-            container-type:inline-size;
-        }}
-        hr[data-id="{uid}"]{{
-            scroll-margin-top: calc(180px - 28cqw);
-        }}
-        </style>
-
         <hr class="divider3" data-id="{uid}">
         """, unsafe_allow_html=True)
 
         show_viewer(annotated_rgb, boxes_meta, labels, confidences)
-
-        components.html(f"""
-        <script>
-        var scrollInterval = setInterval(function() {{
-            var el = window.parent.document.querySelector('hr[data-id="{uid}"]');
-            if (el) {{
-                el.scrollIntoView({{
-                    behavior: "smooth",
-                    block: "start"
-                }});
-                clearInterval(scrollInterval);
-            }}
-        }}, 200);
-        </script>
-        """, height=0)
 
         st.table(table_data)
 
@@ -300,11 +274,3 @@ def render_predict(username: str) -> None:
         )
 
         USERS_DB.save(users)
-
-    st.markdown("""
-    <style>
-    div[data-testid="stTable"]{
-        margin-top: -1rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
