@@ -21,6 +21,10 @@ RUN chmod +x install.sh \
     && ./install.sh \
     && rm -rf /root/.cache/pip
 
+# Download u2net
+RUN wget -O /app/u2net.onnx \
+https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx
+
 # Copy the rest of the application after dependencies are installed.
 COPY . .
 
