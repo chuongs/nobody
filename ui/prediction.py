@@ -25,19 +25,21 @@ MRI_MODEL_PATH = "best.pt"
 
 
 @st.cache_resource
-def load_models() -> tuple[YOLO, YOLO]:
-    return YOLO(DETECTOR_PATH), YOLO(MRI_MODEL_PATH)
+def load_models():
+    detector = YOLO(DETECTOR_PATH)
+    mri = YOLO(MRI_MODEL_PATH)
+    return detector, mri
 
 
-def normalize_image(image: np.ndarray) -> np.ndarray:
+def normalize_image(image: np.ndarray):
     return image / 255.0
 
 
-def resize_image(image: np.ndarray, size=(640, 640)) -> np.ndarray:
+def resize_image(image: np.ndarray, size=(640, 640)):
     return cv2.resize(image, size)
 
 
-def _build_results(boxes, model_names: dict):
+def _build_results(boxes, model_names):
 
     table_data = {
         "Label": [],
@@ -47,15 +49,19 @@ def _build_results(boxes, model_names: dict):
         "Height (px)": [],
     }
 
-    labels, confidences, boxes_meta = [], [], []
+    labels = []
+    confidences = []
+    boxes_meta = []
 
     for box in boxes:
+
         x1, y1, x2, y2 = box.xyxy[0].tolist()
         conf = float(box.conf[0])
         cls_id = int(box.cls[0])
         label = model_names[cls_id]
 
-        w, h = x2 - x1, y2 - y1
+        w = x2 - x1
+        h = y2 - y1
 
         labels.append(label)
         confidences.append(conf)
@@ -87,7 +93,6 @@ def show_viewer(image, boxes_meta, labels, confidences):
         sizing_mode="scale_both",
     )
 
-    fig.min_border = 0
     fig.image_rgba(image=[rgba], x=0, y=0, dw=w, dh=h)
 
     data = {
@@ -143,7 +148,7 @@ def show_viewer(image, boxes_meta, labels, confidences):
     streamlit_bokeh(fig)
 
 
-def render_predict(username: str) -> None:
+def render_predict(username: str):
 
     detector_model, mri_model = load_models()
 
@@ -159,16 +164,18 @@ def render_predict(username: str) -> None:
             type=["jpg", "jpeg", "png"],
         )
 
-        remove_bg_mode = st.toggle(
-            "Remove background",
-            value=False,
-        )
+        remove_bg_mode = st.toggle("Remove background", value=False)
 
         if uploaded_file is None:
             st.info("Please upload an image to get started.")
             return
 
-    current_state = (uploaded_file.file_id, remove_bg_mode)
+    file_bytes = uploaded_file.getvalue()
+
+    current_state = (
+        hash(file_bytes),
+        remove_bg_mode,
+    )
 
     if current_state == st.session_state.last_state:
         return
@@ -235,12 +242,6 @@ def render_predict(username: str) -> None:
             boxes,
             mri_model.names,
         )
-
-        uid = uuid.uuid4().hex
-
-        st.markdown(f"""
-        <hr class="divider3" data-id="{uid}">
-        """, unsafe_allow_html=True)
 
         show_viewer(annotated_rgb, boxes_meta, labels, confidences)
 
