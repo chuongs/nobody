@@ -1,0 +1,10 @@
+onnxruntime
+opencv-python
+rembg
+ultralytics
+plotly
+bokeh
+streamlit_bokeh
+streamlit
+dlib-bin
+face-recognition-models
