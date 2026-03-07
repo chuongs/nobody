@@ -9,7 +9,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from PIL import Image
-from rembg import remove
+from rembg import new_session, remove
 from ultralytics import YOLO
 
 from bokeh.plotting import figure
@@ -27,6 +27,11 @@ MRI_MODEL_PATH = "best.pt"
 @st.cache_resource
 def load_models() -> tuple[YOLO, YOLO]:
     return YOLO(DETECTOR_PATH), YOLO(MRI_MODEL_PATH)
+
+
+@st.cache_resource
+def load_rembg_session():
+    return new_session("u2net")
 
 
 def normalize_image(image: np.ndarray) -> np.ndarray:
@@ -156,6 +161,7 @@ def show_viewer(image, boxes_meta, labels, confidences):
 def render_predict(username: str) -> None:
 
     detector_model, mri_model = load_models()
+    rembg_session = load_rembg_session()
 
     st.title("Prediction")
 
@@ -191,7 +197,7 @@ def render_predict(username: str) -> None:
 
         if remove_bg_mode:
 
-            image_no_background = remove(image)
+            image_no_background = remove(image, session=rembg_session)
 
             image_white = Image.new(
                 "RGB",
