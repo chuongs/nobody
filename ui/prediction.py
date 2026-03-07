@@ -29,9 +29,9 @@ def load_models() -> tuple[YOLO, YOLO]:
     return YOLO(DETECTOR_PATH), YOLO(MRI_MODEL_PATH)
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def load_rembg_session():
-    return new_session("u2net")
+    return new_session("u2netp")
 
 
 def normalize_image(image: np.ndarray) -> np.ndarray:
