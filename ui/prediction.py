@@ -175,16 +175,6 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
-    file_id = uploaded_file.file_id
-
-    if "last_uploaded" not in st.session_state:
-        st.session_state.last_uploaded = None
-
-    if file_id == st.session_state.last_uploaded:
-        return
-
-    st.session_state.last_uploaded = file_id
-
     with st.container(border=True):
 
         image = Image.open(uploaded_file).convert("RGB")
