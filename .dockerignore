@@ -1,8 +1,6 @@
-# VCS
 .git
 .gitignore
 
-# Python cache/build artifacts
 __pycache__/
 *.py[cod]
 *.so
@@ -11,24 +9,19 @@ __pycache__/
 build/
 dist/
 
-# Virtual environments
 .venv/
 venv/
 env/
 
-# Tool caches
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
 .cache/
 
-# Local/editor files
 .DS_Store
 .vscode/
 .idea/
 
-# Logs
 *.log
 
-# Local binaries not required at runtime
 cloudflared.exe
