@@ -9,7 +9,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from PIL import Image
-from rembg import new_session, remove
+from rembg import remove, new_session
 from ultralytics import YOLO
 
 from bokeh.plotting import figure
@@ -23,17 +23,29 @@ from utils.storage_manager import save_prediction_artifacts
 DETECTOR_PATH = "yolo11n.pt"
 MRI_MODEL_PATH = "best.pt"
 
+# 🔴 Đặt model trong project
+U2NET_PATH = "u2net.onnx"
 
+
+# ===============================
+# Load models
+# ===============================
 @st.cache_resource
 def load_models() -> tuple[YOLO, YOLO]:
     return YOLO(DETECTOR_PATH), YOLO(MRI_MODEL_PATH)
 
 
-@st.cache_resource(show_spinner=False)
+# ===============================
+# Load U2Net (background removal)
+# ===============================
+@st.cache_resource
 def load_rembg_session():
-    return new_session("u2netp")
+    return new_session(model_name="u2net", model_path=U2NET_PATH)
 
 
+# ===============================
+# Image utils
+# ===============================
 def normalize_image(image: np.ndarray) -> np.ndarray:
     return image / 255.0
 
@@ -42,6 +54,9 @@ def resize_image(image: np.ndarray, size=(640, 640)) -> np.ndarray:
     return cv2.resize(image, size)
 
 
+# ===============================
+# Build results
+# ===============================
 def _build_results(boxes, model_names: dict):
 
     table_data = {
@@ -75,6 +90,9 @@ def _build_results(boxes, model_names: dict):
     return table_data, labels, confidences, boxes_meta
 
 
+# ===============================
+# Viewer
+# ===============================
 def show_viewer(image, boxes_meta, labels, confidences):
 
     h, w, _ = image.shape
@@ -93,7 +111,6 @@ def show_viewer(image, boxes_meta, labels, confidences):
     )
 
     fig.min_border = 0
-
     fig.image_rgba(image=[rgba], x=0, y=0, dw=w, dh=h)
 
     data = {
@@ -122,15 +139,6 @@ def show_viewer(image, boxes_meta, labels, confidences):
 
     source = ColumnDataSource(data)
 
-    fig.circle(
-        x="x",
-        y="y",
-        radius=5,
-        fill_color="white",
-        line_color=None,
-        source=source,
-    )
-
     renderer = fig.circle(
         x="x",
         y="y",
@@ -158,6 +166,9 @@ def show_viewer(image, boxes_meta, labels, confidences):
     streamlit_bokeh(fig)
 
 
+# ===============================
+# Main predict UI
+# ===============================
 def render_predict(username: str) -> None:
 
     detector_model, mri_model = load_models()
@@ -181,23 +192,19 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
-    file_id = uploaded_file.file_id
-
-    if "last_uploaded" not in st.session_state:
-        st.session_state.last_uploaded = None
-
-    if file_id == st.session_state.last_uploaded:
-        return
-
-    st.session_state.last_uploaded = file_id
-
     with st.container(border=True):
 
         image = Image.open(uploaded_file).convert("RGB")
 
+        # ===============================
+        # Background removal
+        # ===============================
         if remove_bg_mode:
 
-            image_no_background = remove(image, session=rembg_session)
+            image_no_background = remove(
+                image,
+                session=rembg_session,
+            )
 
             image_white = Image.new(
                 "RGB",
@@ -223,6 +230,9 @@ def render_predict(username: str) -> None:
         normalized_image = normalize_image(resized_image)
         normalized_image_uint8 = (normalized_image * 255).astype(np.uint8)
 
+        # ===============================
+        # Detect MRI
+        # ===============================
         det_results = detector_model.predict(
             source=normalized_image_uint8,
             imgsz=640,
@@ -236,6 +246,9 @@ def render_predict(username: str) -> None:
 
         st.toast("MRI analysis completed successfully!", icon="🙂")
 
+        # ===============================
+        # Tumor detection
+        # ===============================
         results = mri_model.predict(
             source=normalized_image_uint8,
             imgsz=640,
@@ -252,37 +265,7 @@ def render_predict(username: str) -> None:
             mri_model.names,
         )
 
-        uid = uuid.uuid4().hex
-
-        st.markdown(f"""
-        <style>
-        div[data-testid="stMainBlockContainer"]{{
-            container-type:inline-size;
-        }}
-        hr[data-id="{uid}"]{{
-            scroll-margin-top: calc(180px - 28cqw);
-        }}
-        </style>
-
-        <hr class="divider3" data-id="{uid}">
-        """, unsafe_allow_html=True)
-
         show_viewer(annotated_rgb, boxes_meta, labels, confidences)
-
-        components.html(f"""
-        <script>
-        var scrollInterval = setInterval(function() {{
-            var el = window.parent.document.querySelector('hr[data-id="{uid}"]');
-            if (el) {{
-                el.scrollIntoView({{
-                    behavior: "smooth",
-                    block: "start"
-                }});
-                clearInterval(scrollInterval);
-            }}
-        }}, 200);
-        </script>
-        """, height=0)
 
         st.table(table_data)
 
@@ -314,11 +297,3 @@ def render_predict(username: str) -> None:
         )
 
         USERS_DB.save(users)
-
-    st.markdown("""
-    <style>
-    div[data-testid="stTable"]{
-        margin-top: -1rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
