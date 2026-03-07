@@ -174,8 +174,6 @@ def render_predict(username: str) -> None:
         if uploaded_file is None:
             st.info("Please upload an image to get started.")
             return
-        
-        st.session_state.last_state = current_state
 
     if not predict:
         return
