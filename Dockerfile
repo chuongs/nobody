@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxcb1 \
     libgl1 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency manifests first to leverage Docker layer caching.
