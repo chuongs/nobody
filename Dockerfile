@@ -5,6 +5,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libxcb1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy dependency manifests first to leverage Docker layer caching.
 COPY requirements.txt install.sh ./
 
@@ -17,4 +25,4 @@ COPY . .
 
 EXPOSE 8501
 
-CMD streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+CMD streamlit run main.py --server.port $PORT --server.address 0.0.0.0
