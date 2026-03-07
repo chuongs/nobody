@@ -175,15 +175,18 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
-    file_id = uploaded_file.file_id
+    file_id = getattr(uploaded_file, "file_id", None) or (
+        f"{uploaded_file.name}:{uploaded_file.size}"
+    )
+    current_signature = (file_id, remove_bg_mode)
 
-    if "last_uploaded" not in st.session_state:
-        st.session_state.last_uploaded = None
+    if "last_processed_signature" not in st.session_state:
+        st.session_state.last_processed_signature = None
 
-    if file_id == st.session_state.last_uploaded:
+    if current_signature == st.session_state.last_processed_signature:
         return
 
-    st.session_state.last_uploaded = file_id
+    st.session_state.last_processed_signature = current_signature
 
     with st.container(border=True):
 
