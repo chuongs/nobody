@@ -165,14 +165,16 @@ def render_predict(username: str) -> None:
             "Upload an image (JPG/PNG)",
             type=["jpg", "jpeg", "png"],
         )
-
-        remove_bg_mode = st.toggle(
-            "Remove background",
-            value=False,
-        )
-
+        
+        remove_bg_mode = st.toggle("Remove background", value=False)
+        
+        predict = st.button("Run prediction")
+        
         if uploaded_file is None:
             st.info("Please upload an image to get started.")
+            return
+        
+        if not predict:
             return
 
         file_id = uploaded_file.file_id
