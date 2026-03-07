@@ -7,7 +7,6 @@ bokeh
 opencv-python-headless
 onnxruntime
 rembg
-# Pin CPU-only torch wheels so hosted Linux builders don't pull CUDA/NVIDIA packages.
 torch==2.5.1+cpu
 torchvision==0.20.1+cpu
 ultralytics
