@@ -29,3 +29,6 @@ env/
 
 # Logs
 *.log
+
+# Local binaries not required at runtime
+cloudflared.exe

@@ -6,6 +6,5 @@ opencv-python-headless
 onnxruntime
 rembg
 ultralytics
-face-recognition
 face-recognition-models
 dlib-bin
