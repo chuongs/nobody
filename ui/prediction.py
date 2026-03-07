@@ -175,6 +175,19 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
+        file_id = uploaded_file.file_id
+        mode = remove_bg_mode
+        
+        current_state = (file_id, mode)
+        
+        if "last_state" not in st.session_state:
+            st.session_state.last_state = None
+        
+        if current_state == st.session_state.last_state:
+            return
+        
+        st.session_state.last_state = current_state
+
     with st.container(border=True):
 
         image = Image.open(uploaded_file).convert("RGB")
