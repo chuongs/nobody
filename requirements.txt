@@ -2,7 +2,6 @@
 
 streamlit
 streamlit_bokeh
-plotly
 bokeh
 opencv-python-headless
 onnxruntime
