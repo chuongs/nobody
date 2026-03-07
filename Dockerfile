@@ -14,16 +14,14 @@ RUN apt-get update && apt-get install -y \
     libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency manifests first to leverage Docker layer caching.
 COPY requirements.txt install.sh ./
 
 RUN chmod +x install.sh \
     && ./install.sh \
     && rm -rf /root/.cache/pip
 
-# Copy the rest of the application after dependencies are installed.
 COPY . .
 
 EXPOSE 8501
 
-CMD streamlit run main.py --server.port $PORT --server.address 0.0.0.0
+CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
