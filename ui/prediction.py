@@ -175,8 +175,7 @@ def render_predict(username: str) -> None:
             st.info("Please upload an image to get started.")
             return
 
-    if not predict:
-        return
+
     
     with st.container(border=True):
     
