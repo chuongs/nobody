@@ -1,0 +1,13 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+streamlit
+streamlit_bokeh
+bokeh
+opencv-python-headless
+onnxruntime
+rembg
+torch==2.5.1+cpu
+torchvision==0.20.1+cpu
+ultralytics
+face-recognition-models
+dlib-bin

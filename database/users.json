@@ -1,0 +1,39 @@
+{
+  "default": {
+    "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "email": "default@gmail.com",
+    "face_encoding": [],
+    "history": [
+      {
+        "prediction_id": "0b20e6a3-aedc-4284-97ea-563ca6597620",
+        "time": "2026-03-08T09:31:10.803744",
+        "result_path": "C:\\chuongs\\nobody\\private\\default\\predictions\\0b20e6a3-aedc-4284-97ea-563ca6597620\\output.jpg",
+        "summary": "No tumor detected"
+      },
+      {
+        "prediction_id": "8b21fe6c-0add-4a06-8b3e-1610c462dcea",
+        "time": "2026-03-08T09:31:25.344735",
+        "result_path": "C:\\chuongs\\nobody\\private\\default\\predictions\\8b21fe6c-0add-4a06-8b3e-1610c462dcea\\output.jpg",
+        "summary": "meningioma, pituitary"
+      },
+      {
+        "prediction_id": "3242b995-2e2d-4571-845c-afb613592fbd",
+        "time": "2026-03-08T09:31:55.082463",
+        "result_path": "C:\\chuongs\\nobody\\private\\default\\predictions\\3242b995-2e2d-4571-845c-afb613592fbd\\output.jpg",
+        "summary": "glioma"
+      },
+      {
+        "prediction_id": "1e5292e8-e156-497a-9274-72164965d04d",
+        "time": "2026-03-08T09:32:03.480095",
+        "result_path": "C:\\chuongs\\nobody\\private\\default\\predictions\\1e5292e8-e156-497a-9274-72164965d04d\\output.jpg",
+        "summary": "glioma, meningioma"
+      },
+      {
+        "prediction_id": "4778b19c-19ce-4ea4-965c-ccbe017ce58e",
+        "time": "2026-03-08T09:33:02.703123",
+        "result_path": "C:\\chuongs\\nobody\\private\\default\\predictions\\4778b19c-19ce-4ea4-965c-ccbe017ce58e\\output.jpg",
+        "summary": "pituitary"
+      }
+    ]
+  }
+}
