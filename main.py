@@ -41,7 +41,7 @@ img {
 """, unsafe_allow_html=True)
 
 
-st.set_page_config(page_icon="🧠", page_title="Brain Tumor Detection", layout="wide")
+st.set_page_config(page_icon="logo.png", page_title="Brain Tumor Detection", layout="wide")
 
 
 JsonDB("database/users.json", default_data={})
